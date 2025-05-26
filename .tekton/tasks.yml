@@ -2,9 +2,9 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cleanup
-specs:
-  workspace:
-    name: source
+spec:
+  workspaces:
+    - name: source
   steps:
     - name: remove
       image: alpine:3
@@ -13,8 +13,8 @@ specs:
           value: $(workspaces.source.path)
       workingDir: $(workspaces.source.path)
       securityContext:
-        - runAsNonRoot: false
-        - runAsUser: 
+        runAsNonRoot: false
+        runAsUser: 0
       script: |
         #!/usr/bin/env sh
         set -eu
@@ -38,17 +38,14 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: nose
-
 spec:
-  workdspaces:
-    name: source
-  
+  workspaces:
+    - name: source
   params:
     - name: args
       description: Arguments to pass to nose
       type: string
       default: "-v"
-  
   steps:
     - name: nosetests
       image: python:3.9-slim
